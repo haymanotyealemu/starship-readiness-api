@@ -1,0 +1,28 @@
+#%RAML 1.0 DataType
+type: object
+description: Mission request parameters.
+properties:
+  passengers:
+    type: integer
+    required: true
+    minimum: 1
+    description: Number of passengers for the mission.
+    example:
+      20
+    
+  cargoWeight:
+    type: number
+    required: false
+    description: Cargo weight in kilograms.
+    example:
+      50000
+  requiresHyperdrive:
+    type: boolean
+    required: true
+    description: Indicates whether the mission requires hyperdrive capability.
+    example:
+      true
+           
+
+
+

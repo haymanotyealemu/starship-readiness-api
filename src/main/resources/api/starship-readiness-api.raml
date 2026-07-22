@@ -1,0 +1,74 @@
+#%RAML 1.0
+title: starship-readiness-api
+description:   This API determines which Star Wars starships are capable of supporting a mission based on passenger capacity, cargo weight, and hyperdrive requirements. The API retrieves starship information from the public Star Wars API (SWAPI) and returns all qualifying starships.
+version: v1
+baseUri: http://localhost:8081/api
+mediaType: 
+- application/json
+protocols:
+  - HTTP
+uses:
+  common: libraries/common-library.raml
+/api:
+  /v1:
+    /starship:
+      /readiness:
+        type: common.collection
+        post:
+          is:
+            - common.client-id-required
+            - common.correlation-id
+          description: Determines which Star Wars starships satisfy the requested mission requirements.
+          body:
+            application/json:
+              type: common.MissionRequest
+              example: !include examples/MissionRequestExample.raml
+          responses:
+            200:
+              description: Mission readiness evaluated successfully.
+              headers:
+                X-Correlation-Id:
+                  type: string
+                  description: Correlation ID used to trace the request.
+              body:
+                application/json:
+                  type: common.MissionResponse
+                  examples:
+                     missionSupported:
+                       description: One or more starships satisfy the Mission.          
+                       value: !include examples/SuccessResponseExample.raml
+                     noMatchingShips:
+                       description: No starships satisfy the mission requirements.
+                       value: !include examples/NoShipResponse.raml 
+            400:
+              headers:
+                X-Correlation-Id:
+                  type: string
+                  description: Correlation ID used to trace the request.
+              body:
+                application/json:
+                  type: common.ErrorResponse
+                  example: !include examples/BadRequestExample.raml
+            500:
+              headers:
+                 X-Correlation-Id:
+                   type: string
+                   description: Correlation ID used to trace the request.
+              body:
+                application/json:
+                  type: common.ErrorResponse
+                  example: !include examples/InternalServerErrorExample.raml
+            401:
+              body:
+                application/json:
+                  type: common.ErrorResponse
+                  example: !include examples/UnauthorizedExample.raml
+                    
+                
+                                              
+
+                    
+                    
+                
+
+          

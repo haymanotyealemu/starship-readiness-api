@@ -1,0 +1,30 @@
+#%RAML 1.0 DataType
+type: object
+description: Standard error response.
+properties:
+  errorInfo:
+    description: Erorr object list
+    type: array
+    items:
+      type: object
+      properties:
+        code:
+          type: integer
+          required: true
+          description: HTTP status code or application-specific error code.
+          example: 400
+        message:
+          type: string
+          required: true
+          description: Short summary of the error.
+          example: Bad Request
+        detail:
+          type: string
+          required: true
+          description: Detailed explanation of the error.
+          example: Invalid Request
+            
+            
+        
+            
+  

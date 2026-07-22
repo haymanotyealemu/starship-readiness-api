@@ -1,0 +1,23 @@
+#%RAML 1.0 DataType
+type: object
+description: Mission readiness response.
+properties:
+  missionSupported:
+    type: boolean
+    required: true
+    description: Indicates whether one or more starships satisfy the mission.
+    example: true
+  message:
+    type: string
+    required: true
+    description: Summary of the mission readiness result.
+    example: 2 starship(s) satisfy the mission requirements.
+            
+  matchingShips:
+    type: array
+    required: true
+    description: List of starships capable of completing the mission.
+    items: !include starShipdataType.raml
+      
+
+    

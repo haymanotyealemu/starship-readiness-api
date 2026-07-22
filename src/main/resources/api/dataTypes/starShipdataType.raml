@@ -1,0 +1,38 @@
+#%RAML 1.0 DataType
+type: object
+description: Starship details that satisfy the requested mission.
+properties:
+  name:
+    type: string
+    required: true
+    description: Name of the starship.
+    example:  Millennium Falcon
+  model:
+    type: string
+    required: true
+    description: Manufacturer model of the starship.
+    example: YT-1300 light freighter
+  starshipClass:
+    type: string
+    required: true
+    description: Classification of the starship.
+    example: Light freighter
+
+  cargoCapacity:
+    type: integer
+    required: true
+    description: Maximum cargo capacity in kilograms.
+    example: 100000
+
+  crew:
+    type: integer
+    required: true
+    description: Maximum crew supported by the starship.
+    example: 4
+
+  passengers:
+    type: integer
+    required: true
+    description: Maximum passenger capacity.
+    example: 6
+      

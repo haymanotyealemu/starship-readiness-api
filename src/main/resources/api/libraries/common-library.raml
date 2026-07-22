@@ -1,0 +1,12 @@
+#%RAML 1.0 Library
+usage: Common reusable API assets.
+types:
+  MissionRequest: !include ../dataTypes/missionRequest.raml
+  MissionResponse: !include ../dataTypes/missionResponse.raml
+  Starship: !include ../dataTypes/starShipdataType.raml
+  ErrorResponse: !include ../dataTypes/errorResponse.raml
+traits:
+  client-id-required: !include ../traits/client-id-required.raml
+  correlation-id: 1
+resourceTypes:
+   collection: !include ../resourceTypes/collection.raml

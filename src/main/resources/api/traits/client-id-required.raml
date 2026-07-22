@@ -1,0 +1,24 @@
+#%RAML 1.0 Trait
+description: Requires a valid Client ID and Client Secret.
+  Authentication is enforced by the Client ID Enforcement policy
+  configured in MuleSoft API Manager.
+headers:
+  client_id:
+
+    type: string
+
+    required: true
+
+    description: Client ID issued from API Manager.
+
+    example: 7e3b2e56xxxxxxxx
+
+  client_secret:
+
+    type: string
+
+    required: true
+
+    description: Client Secret issued from API Manager.
+
+    example: 5ad4a8xxxxxxxx

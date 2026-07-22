@@ -1,0 +1,11 @@
+#%RAML 1.0 Trait
+description:  Correlation ID used for end-to-end request tracing across distributed systems.
+  If not provided by the client, the API generates one automatically.
+headers:
+  X-Correlation-Id:
+    type: string
+    required: false
+    description: Unique identifier used to trace the request across systems.
+    example: 8b5d6b3e-4c6f-4d84-ae2d-f2f8e95f7d11
+      
+
