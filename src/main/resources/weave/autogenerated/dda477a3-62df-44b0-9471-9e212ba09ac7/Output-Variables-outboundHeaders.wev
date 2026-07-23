@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_dda477a3_62df_44b0_9471_9e212ba09ac7_Output_Variables_outboundHeaders = {| "x-correlation-id": String |}
+

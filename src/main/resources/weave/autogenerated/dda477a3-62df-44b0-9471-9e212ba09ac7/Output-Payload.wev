@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_dda477a3_62df_44b0_9471_9e212ba09ac7_Output_Payload = {
+  missionSupported: Boolean, 
+  matchingShips: Array<{    passengers: Number,     starshipClass: String,     name: String,     model: String,     cargoCapacity: Number,     crew: Number,     _?: Any  } {"description": "Starship details that satisfy the requested mission."}> {"description": "List of starships capable of completing the mission."}, 
+  message: String, 
+  _?: Any
+} {"description": "Mission readiness response."}
+
