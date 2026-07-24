@@ -1,1 +1,14 @@
-apiID:"21046590"
+http:
+  listener:
+    host: "0.0.0.0"
+    port: "8081"
+  
+swapi:
+  protocol: "HTTPS"
+  host: "swapi.dev"
+  port: "443"
+  basePath: "/api"
+  starshipsPath: "/starships/"
+  
+apiID: "21046590"
+

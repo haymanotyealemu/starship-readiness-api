@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-	<sub-flow name="post-starhip-readiness-Sub_Flow" doc:id="17c77ef7-a2ad-447b-b3e7-e21ddc6bb2c0" />
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="post-starhip-readinessFlow" doc:id="dda477a3-62df-44b0-9471-9e212ba09ac7" >
+		<logger level="INFO" doc:name="Received Mission Request" doc:id="8ce7ddf2-bfcc-433d-af64-d07535c3581e" message="#[payload]"/>
+		<set-variable value="#[payload]" doc:name="MissionCriteria" doc:id="3536acea-6078-4b8d-b779-d9891f4b8da2" variableName="missionCriteria"/>
+		<http:request doc:name="Retrieve Starships from SWAPI" doc:id="66312491-25c8-4192-ada5-62f088a0d0f8" config-ref="HTTP_Request_config" method="GET" url="https://swapi.dev/api/starships"/>
+		<logger level="INFO" doc:name="Log SWAPI Response" doc:id="d4f1b733-0a85-4b6b-b344-ef97efc8af81" message="#[[write(payload, 'application/json')]]"/>
+	</flow>
 </mule>

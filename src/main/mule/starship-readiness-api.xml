@@ -6,13 +6,13 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
     </http:listener-config>
     <apikit:config name="starship-readiness-api-config" api="starship-readiness-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 	<flow name="starship-readiness-api-main">
-        <http:listener config-ref="starship-readiness-api-httpListenerConfig" path="/api/*">
+        <http:listener config-ref="starship-readiness-api-httpListenerConfig" path="/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="starship-readiness-api-config" />
@@ -124,36 +124,7 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="post:\api\v1\starship\readiness:application\json:starship-readiness-api-config">
-        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-{
-  missionSupported: true,
-  message: "2 starship(s) satisfy the mission requirements.",
-  matchingShips: [
-    {
-      name: "Millennium Falcon",
-      model: "YT-1300 light freighter",
-      starshipClass: "Light freighter",
-      cargoCapacity: 100000,
-      crew: 4,
-      passengers: 6
-    }, 
-    {
-      name: "Imperial Shuttle",
-      model: "Lambda-class T-4a shuttle",
-      starshipClass: "Armed government transport",
-      cargoCapacity: 80000,
-      crew: 6,
-      passengers: 20
-    }
-  &#93;
-} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
-            </ee:message>
-        </ee:transform> [STUDIO] -->
-		<flow-ref doc:name="post-starhip-readinessFlow" doc:id="1a5c38fc-ca12-4803-b1b4-04c972e710c0" name="post-starhip-readinessFlow"/>
+	<flow name="post:\api\v1\starship\readiness:application\json:starship-readiness-api-config">
+		<flow-ref doc:name="post-starhip-readinessFlow" doc:id="1a5c38fc-ca12-4803-b1b4-04c972e710c0" name="post-starhip-readinessFlow" />
     </flow>
 </mule>

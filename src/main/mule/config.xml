@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
-	<api-gateway:autodiscovery apiId="${apiID}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="91960157-9ce8-41d2-b366-e690ac5b8f1d" flowRef="starship-readiness-api-main" />
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="c4bce5b9-2167-40b8-80ed-4ce2ab115ead" file="properties\dev.yaml" />
+	<http:request-config name="HTTP_Request_config" doc:name="HTTP Request config" doc:id="a5eef2de-4ac1-4e17-bd0f-886781360378" >
+		<http:request-connection host="${swapi.host}" port="${swapi.port}" />
+	</http:request-config>
+	<global-property doc:name="Global Property" doc:id="247068e4-76b8-40c7-9293-c5d8c5b735dd" name="anypoint.platform.gatekeeper" value="disabled" />
 </mule>
