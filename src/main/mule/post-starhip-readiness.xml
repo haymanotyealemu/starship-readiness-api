@@ -9,10 +9,27 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<logger level="INFO" doc:name="Received Mission Request" doc:id="8ce7ddf2-bfcc-433d-af64-d07535c3581e" message="#[payload]"/>
 		<set-variable value="#[payload]" doc:name="MissionCriteria" doc:id="3536acea-6078-4b8d-b779-d9891f4b8da2" variableName="missionCriteria"/>
 		<http:request doc:name="Retrieve Starships from SWAPI" doc:id="66312491-25c8-4192-ada5-62f088a0d0f8" config-ref="HTTP_Request_config" method="GET" url="https://swapi.dev/api/starships"/>
-		<ee:transform doc:name="Normalize Starships" doc:id="ace8aa68-3713-4913-a075-449cdcddbe13" >
+		<choice doc:name="Response Validation" doc:id="da115866-6f5b-43da-b9f5-67eea9b346b1" >
+			<when expression="#[isEmpty(payload)==true]">
+				<ee:transform doc:name="No Ships Support" doc:id="a923c8ad-c0b3-48fe-b4bf-7f8ad0c7de83" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "missionSupported": false,
+  "message": "No starships satisfy the supplied mission parameters.",
+  "matchingShips": []
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+			<ee:transform doc:name="Normalize Starships Response" doc:id="61263a6c-c94f-49bd-b687-43effcc5f32e" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
+import * from dw::core::Strings
 fun toNumber(value) =
     if (
         value == null or
@@ -28,23 +45,98 @@ payload.results map (ship) -> {
     name: ship.name,
     model: ship.model,
     starshipClass: ship.starship_class,
-    passengers: toNumber(ship.passengers),
-    maxCrew: ship.crew,
-    cargoCapacity: toNumber(ship.cargo_capacity),
+    maxCargoWeight: toNumber(ship.cargo_capacity),
+    maxCrew: if (ship.crew contains "-")
+        substringAfter(ship.crew, "-")
+    else ship.crew,
+    maxPassengers: toNumber(ship.passengers),
     hyperdriveRating: toNumber(ship.hyperdrive_rating)
 }]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 			</ee:variables>
 		</ee:transform>
-		<ee:transform doc:name="Transform Message" doc:id="8e5862bd-1531-466f-8676-6cf212a55890">
+		<choice doc:name="HyperDrive Required" doc:id="1ad8e81f-9820-4348-a4da-5549ca5b3076" >
+			<when expression="#[vars.missionCriteria.requiresHyperdrive==true]">
+				<ee:transform doc:name="Prepare Response" doc:id="cfd84b45-180c-40fb-819a-d54e9f72f734">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
-output application/java
+output application/json
+var matchingShips =
+    payload filter (ship) ->
+
+        ship.maxPassengers >= vars.missionCriteria.passengers
+
+        and
+
+        (
+            vars.missionCriteria.cargoWeight == null
+            or
+            ship.maxCargoWeight >= vars.missionCriteria.cargoWeight
+        )
+
+        and
+
+        (
+            !vars.missionCriteria.requiresHyperdrive
+            or ship.hyperdriveRating <= 2
+        )
 ---
 {
+	 missionSupported: !isEmpty(matchingShips),
+
+    message:
+        if (isEmpty(matchingShips))
+            "No starships satisfy the supplied mission requirements."
+        else
+            sizeOf(matchingShips) ++ " starship(s) satisfy the mission requirements.",
+
+    matchingShips: matchingShips
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="a208da92-58bc-467b-a05b-1c7743e5d744" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var matchingShips =
+    payload filter (ship) ->
+
+        ship.maxPassengers >= vars.missionCriteria.passengers
+
+        and
+
+        (
+            vars.missionCriteria.cargoWeight == null
+            or
+            ship.maxCargoWeight >= vars.missionCriteria.cargoWeight
+        )
+
+        and
+
+        (
+            !vars.missionCriteria.requiresHyperdrive
+            or ship.hyperdriveRating
+        )
+---
+{
+	 missionSupported: !isEmpty(matchingShips),
+
+    message:
+        if (isEmpty(matchingShips))
+            "No starships satisfy the supplied mission requirements."
+        else
+            sizeOf(matchingShips) ++ " starship(s) satisfy the mission requirements.",
+
+    matchingShips: matchingShips
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+			</otherwise>
+		</choice>
 	</flow>
 </mule>

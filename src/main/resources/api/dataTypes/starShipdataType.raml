@@ -18,21 +18,29 @@ properties:
     description: Classification of the starship.
     example: Light freighter
 
-  cargoCapacity:
+  maxCargoWeight:
     type: integer
-    required: true
+    required: false
     description: Maximum cargo capacity in kilograms.
     example: 100000
 
-  crew:
-    type: integer
+  maxCrew:
+    type: string
     required: true
     description: Maximum crew supported by the starship.
-    example: 4
+    example: "4"
 
-  passengers:
+  maxPassengers:
     type: integer
     required: true
     description: Maximum passenger capacity.
     example: 6
+  hyperdriveRating:
+    type: integer
+    required: true
+    description: hyperdrive rating value
+    example: 2
+      
+    
+    
       
