@@ -6,7 +6,8 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="post-starhip-readinessFlow" doc:id="dda477a3-62df-44b0-9471-9e212ba09ac7" >
-		<logger level="INFO" doc:name="Received Mission Request" doc:id="8ce7ddf2-bfcc-433d-af64-d07535c3581e" message="#[payload]"/>
+		<set-variable value="#[attributes.headers.'X-Correlation-Id' default correlationId]" doc:name="correlationId" doc:id="b5457393-3520-44d6-aa59-72b1b824b001" variableName="correlationId"/>
+		<logger level="INFO" doc:name="Received Mission Request" doc:id="8ce7ddf2-bfcc-433d-af64-d07535c3581e" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	&#10;payload: payload,&#10;correlationId: vars.correlationId&#10;&#10;}]'/>
 		<set-variable value="#[payload]" doc:name="MissionCriteria" doc:id="3536acea-6078-4b8d-b779-d9891f4b8da2" variableName="missionCriteria"/>
 		<http:request doc:name="Retrieve Starships from SWAPI" doc:id="66312491-25c8-4192-ada5-62f088a0d0f8" config-ref="HTTP_Request_config" method="GET" url="https://swapi.dev/api/starships"/>
 		<choice doc:name="Response Validation" doc:id="da115866-6f5b-43da-b9f5-67eea9b346b1" >
@@ -22,6 +23,19 @@ output application/json
   "matchingShips": []
 }]]></ee:set-payload>
 					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="outboundHeaders" ><![CDATA[%dw 2.0
+output application/java
+---
+(vars.outboundHeaders default {}) ++
+{
+    "X-Correlation-ID": vars.correlationId
+}]]></ee:set-variable>
+						<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+"200"]]></ee:set-variable>
+					</ee:variables>
 				</ee:transform>
 			</when>
 			<otherwise >
@@ -94,10 +108,24 @@ var matchingShips =
     matchingShips: matchingShips
 }]]></ee:set-payload>
 			</ee:message>
-		</ee:transform>
+							<ee:variables >
+								<ee:set-variable variableName="outboundHeaders" ><![CDATA[%dw 2.0
+output application/java
+---
+(vars.outboundHeaders default {}) ++
+{
+    "X-Correlation-ID": vars.correlationId
+}]]></ee:set-variable>
+								<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+"200"]]></ee:set-variable>
+							</ee:variables>
+		
+</ee:transform>
 			</when>
 			<otherwise >
-				<ee:transform doc:name="Transform Message" doc:id="a208da92-58bc-467b-a05b-1c7743e5d744" >
+				<ee:transform doc:name="Prepare Response" doc:id="a208da92-58bc-467b-a05b-1c7743e5d744" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -133,10 +161,37 @@ var matchingShips =
     matchingShips: matchingShips
 }]]></ee:set-payload>
 					</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="outboundHeaders" ><![CDATA[%dw 2.0
+output application/java
+---
+(vars.outboundHeaders default {}) ++
+{
+    "X-Correlation-ID": vars.correlationId
+}]]></ee:set-variable>
+								<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+"200"]]></ee:set-variable>
+							</ee:variables>
+				
+</ee:transform>
+			</otherwise>
+		</choice>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="3476c8f2-f80a-41af-8a1e-39109991cf04" message="#[payload]"/>
+		<error-handler>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="17ab63cf-df80-496c-8b2f-866a894e5100" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="75ca0189-b3e3-4154-84e8-25026a6c96f7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+error.detailedDescription]]></ee:set-payload>
+					</ee:message>
 				</ee:transform>
-			</otherwise>
-		</choice>
-			</otherwise>
-		</choice>
+			</on-error-propagate>
+		</error-handler>
 	</flow>
 </mule>

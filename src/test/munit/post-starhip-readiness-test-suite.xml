@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="post-starhip-readiness-test-suite.xml" />
+	<munit:test name="post-starhip-readiness-test-suite-post-starhip-readiness-happy-path-flow" doc:id="cd7c8d2f-4d58-4ed2-b19a-4df83cbfe558" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock SWAPI" doc:id="d2426208-6ea2-40f9-92e8-12b07f66a8da" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Retrieve Starships from SWAPI" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="66312491-25c8-4192-ada5-62f088a0d0f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;    "count": 36,&#10;    "next": "https://swapi.dev/api/starships/?page=2",&#10;    "previous": null,&#10;    "results": [&#10;        {&#10;            "name": "CR90 corvette",&#10;            "model": "CR90 corvette",&#10;            "manufacturer": "Corellian Engineering Corporation",&#10;            "cost_in_credits": "3500000",&#10;            "length": "150",&#10;            "max_atmosphering_speed": "950",&#10;            "crew": "30-165",&#10;            "passengers": "600",&#10;            "cargo_capacity": "3000000",&#10;            "consumables": "1 year",&#10;            "hyperdrive_rating": "2.0",&#10;            "MGLT": "60",&#10;            "starship_class": "corvette",&#10;            "pilots": [],&#10;            "films": [&#10;                "https://swapi.dev/api/films/1/",&#10;                "https://swapi.dev/api/films/3/",&#10;                "https://swapi.dev/api/films/6/"&#10;            ],&#10;            "created": "2014-12-10T14:20:33.369000Z",&#10;            "edited": "2014-12-20T21:23:49.867000Z",&#10;            "url": "https://swapi.dev/api/starships/2/"&#10;        }]}]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1bec4daa-8bf4-4722-b8a3-29199ffab55f" >
+				<munit:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;   "passengers": 50,&#10;   "cargoWeight": 100000,&#10;   "requiresHyperdrive": true&#10;}]' encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value='#[{headers: {"client_id": "123", "client_secret": "2345", "X-Correlation-Id": "23456"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post-starhip-readinessFlow" doc:id="c822ff6b-c461-4983-8705-ff3ac3da6a26" name="post-starhip-readinessFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="5f3f295b-f32e-40f2-b49b-5fc3f88a204d" actual="#[vars.httpStatus]" expected='#["200"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post-starhip-readiness-test-suite-post-starhip-readiness-negative-scenario-flow" doc:id="9ce70a3b-3cf3-47c1-b580-fef20bd6ca1a" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock SWAPI" doc:id="43072b2d-dc26-4861-8a51-bec5de0cb7a8" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Retrieve Starships from SWAPI" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="66312491-25c8-4192-ada5-62f088a0d0f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="8397fb83-662e-4f9f-92cc-cbab02d3ca1c" >
+				<munit:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;   "passengers": 50,&#10;   "cargoWeight": 100000,&#10;   "requiresHyperdrive": true&#10;}]' encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value='#[{headers: {"client_id": "123", "client_secret": "2345", "X-Correlation-Id": "23456"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post-starhip-readinessFlow" doc:id="808caed9-8608-4002-9d03-d64fc25fe91e" name="post-starhip-readinessFlow" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="7dd67589-975b-4443-bcf5-4c946b2d3c91" actual="#[vars.httpStatus]" expected='#["200"]' />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

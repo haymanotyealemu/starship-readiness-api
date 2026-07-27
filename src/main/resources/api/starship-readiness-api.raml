@@ -9,10 +9,9 @@ protocols:
   - HTTP
 uses:
   common: libraries/common-library.raml
-/api:
-  /v1:
-    /starship:
-      /readiness:
+
+/starship:
+    /readiness:
         type: common.collection
         post:
           is:
@@ -63,12 +62,3 @@ uses:
                 application/json:
                   type: common.ErrorResponse
                   example: !include examples/UnauthorizedExample.raml
-                    
-                
-                                              
-
-                    
-                    
-                
-
-          
